@@ -28,6 +28,33 @@ const loginPatient = `select patient_id from patient;`;
 //로그인한 환자의 id를 가져와서 반환하는 함수 필요
 //--------------------------------------------------------------------------------------------------------------------------------
 //on Web
+app.get("/getrequest", async(req, res) => {
+    try {
+        const notification = `select patient.name, bed.bed_id, request.requests, request.requesttime from patient, bed, request where bed.token = patient.token and patient.token = request.token;`;
+        pool.query(notification, function (err, result) {
+            //console.log(result);
+            return res.status(200).json(result);
+        });
+    } catch {
+
+    }
+})
+
+
+app.get("/patientsearch", async (req, res) => {
+    //여기서는 항상 리퀘스트랑 간호사 호출이랑 실행이 되고 있어야함
+    //데이터 변동이 있으면 select 해서 웹이 showDialog;
+    try {
+        const searchPatient = `select * from patient`;
+        console.log(req.params);
+        pool.query(searchPatient, function (err, result) {
+            return res.status(200).json(result);
+        });
+    } catch (err){
+        return res.status(400).json({error : err});
+    }
+});
+
 app.get("/adminweb", async (req, res) => {
     //여기서는 항상 리퀘스트랑 간호사 호출이랑 실행이 되고 있어야함
     //데이터 변동이 있으면 select 해서 웹이 showDialog;
@@ -90,7 +117,7 @@ app.get("/getRequest", async(req, res) => {
     try {
         const getRequest = `select * from request order by request_id`;
         pool.query(getRequest, function (err, result) {
-            console.log(result);
+            //console.log(result);
             return res.status(200).json(result);
 
         }); 
