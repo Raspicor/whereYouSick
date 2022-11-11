@@ -24,8 +24,7 @@ app.listen(3000, () => {
     console.log('Listenning on http://localhost:3000');
 });
 
-const loginPatient = `select patient_id from patient;`;
-//로그인한 환자의 id를 가져와서 반환하는 함수 필요
+
 //--------------------------------------------------------------------------------------------------------------------------------
 //on Web
 app.get("/getrequest", async(req, res) => {
@@ -36,7 +35,7 @@ app.get("/getrequest", async(req, res) => {
             return res.status(200).json(result);
         });
     } catch {
-
+        return res.status(400).json(result);
     }
 })
 
@@ -55,44 +54,10 @@ app.get("/patientsearch", async (req, res) => {
     }
 });
 
-app.get("/adminweb", async (req, res) => {
-    //여기서는 항상 리퀘스트랑 간호사 호출이랑 실행이 되고 있어야함
-    //데이터 변동이 있으면 select 해서 웹이 showDialog;
-    try {
-        const notification = `select * from call`;
-        pool.query(notification, function (err, result) {
-            return res.status(200).json(result);
-        });
-    } catch (err){
-        return res.status(400).json({error : err});
-    }
-});
-app.get("/adminMain", async (req, res) => {
-    try {
-        const getRequirement = `select * from request`;
-        pool.query(getRequirement, function (err, result) {
-            return res.status(200).json(result);
-        });
-    } catch (err){
-        return res.status(400).json({error : err});
-    }
-});
-
 //선택한 DB에서 가져오기
 app.get("/getDatabase", async(req, res) => {
     try {
         const getData = `select * from ${req.body.db}`
-        pool.query(getData, function (err, result) {
-            console.log(result);
-            return res.status(200).json(result);
-        }); 
-    } catch (err) {
-        return res.status(400).json({error : err});
-    }
-});
-app.get("/patients", async(req, res) => {
-    try {
-        const getData = `select * from patient`
         pool.query(getData, function (err, result) {
             console.log(result);
             return res.status(200).json(result);
@@ -113,20 +78,7 @@ app.put('/patients/update', async(req, res) => {
     }
 });
 
-app.get("/getRequest", async(req, res) => {
-    try {
-        const getRequest = `select * from request order by request_id`;
-        pool.query(getRequest, function (err, result) {
-            //console.log(result);
-            return res.status(200).json(result);
-
-        }); 
-    } catch (err) {
-        return res.status(400).json({error : err});
-    }
-});
-
-app.post("/writenotice", async(req, res) => {
+app.post("/nurseNotice", async(req, res) => {
     try {
         const writeNotice = `insert into notification(title, content) values ('${req.body.title}', '${req.body.content}')`;
         pool.query(writeNotice, function (err, result) {
@@ -186,6 +138,7 @@ app.post('/request', async(req, res) => {
         return res.status(400).json({error : err});
     }
 });
+
 app.post('/meal', async(req, res) => {
     try{
         console.log(req.body);
@@ -214,12 +167,34 @@ app.post('/certificates', async(req, res) => {
 });
 
 
-app.get('/notice' ,async(req, res) => {
+app.get('/getnotice', async(req, res) => {
     try{
         const getNotice = `select * from notification`;
         pool.query(getNotice, function (err, result) {
-            console.log(req.body);
             console.log(result);
+            return res.status(200).json(result);
+        });
+    } catch(err){
+        return res.status(400).json({error : err});
+    }
+});
+
+app.post('/newbie', async(req, res) => {
+    try{    
+        const newbie = `insert into bed(bed_id, token) values ('${req.body.bed_id}', '${req.body.token}')`;
+        pool.query(newbie, function (err, result) {
+            console.log(req.body);
+            return res.status(200).json(result);
+        });
+    } catch(err){
+        return res.status(400).json({error : err});
+    }
+});
+
+app.get('/gettoken', async(req, res) => {
+    try{    
+        const newbietoken = `select token from patient order by patient_indate desc limit 1;`;
+        pool.query(newbietoken, function (err, result) {
             return res.status(200).json(result);
         });
     } catch(err){
