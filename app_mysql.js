@@ -24,10 +24,9 @@ app.listen(3000, () => {
     console.log('Listenning on http://localhost:3000');
 });
 
-
-//--------------------------------------------------------------------------------------------------------------------------------
-//on Web
-app.get("/getrequest", async(req, res) => {
+//Rest API 적용
+//전체 요청사항 조회
+app.get("/request", async(req, res) => {
     try {
         const notification = `select patient.name, bed.bed_id, request.requests, request.requesttime from patient, bed, request where bed.token = patient.token and patient.token = request.token;`;
         pool.query(notification, function (err, result) {
@@ -39,10 +38,8 @@ app.get("/getrequest", async(req, res) => {
     }
 })
 
-
-app.get("/patientsearch", async (req, res) => {
-    //여기서는 항상 리퀘스트랑 간호사 호출이랑 실행이 되고 있어야함
-    //데이터 변동이 있으면 select 해서 웹이 showDialog;
+//환자 전체 정보 조회
+app.get("/patient", async (req, res) => {
     try {
         const searchPatient = `select * from patient`;
         console.log(req.params);
@@ -54,8 +51,8 @@ app.get("/patientsearch", async (req, res) => {
     }
 });
 
-//선택한 DB에서 가져오기
-app.get("/getDatabase", async(req, res) => {
+//특정 DB 조회
+app.get("/database", async(req, res) => {
     try {
         const getData = `select * from ${req.body.db}`
         pool.query(getData, function (err, result) {
@@ -68,7 +65,7 @@ app.get("/getDatabase", async(req, res) => {
 });
 
 //환자 정보 수정
-app.put('/patients/update', async(req, res) => {
+app.put('/patient', async(req, res) => {
     try{
         const result = await mysql.query('patientUpdate', req.body.param);
         console.log('Successfully updated!');
@@ -78,7 +75,8 @@ app.put('/patients/update', async(req, res) => {
     }
 });
 
-app.post("/nurseNotice", async(req, res) => {
+//공지 등록
+app.post("/notification", async(req, res) => {
     try {
         const writeNotice = `insert into notification(title, content) values ('${req.body.title}', '${req.body.content}')`;
         pool.query(writeNotice, function (err, result) {
@@ -153,7 +151,7 @@ app.post('/meal', async(req, res) => {
     }
 });
 
-app.post('/certificates', async(req, res) => {
+app.post('/certificate', async(req, res) => {
     try{
         const certificatesRequest = `insert into certification(token, certificates, requesttime) values ('${req.body.token}', '${req.body.certificates}', '${req.body.requesttime}')`;
         pool.query(certificatesRequest, function (error, result) {
@@ -167,7 +165,7 @@ app.post('/certificates', async(req, res) => {
 });
 
 
-app.get('/getnotice', async(req, res) => {
+app.get('/notice', async(req, res) => {
     try{
         const getNotice = `select * from notification`;
         pool.query(getNotice, function (err, result) {
@@ -191,7 +189,7 @@ app.post('/newbie', async(req, res) => {
     }
 });
 
-app.get('/gettoken', async(req, res) => {
+app.get('/token', async(req, res) => {
     try{    
         const newbietoken = `select token from patient order by patient_indate desc limit 1;`;
         pool.query(newbietoken, function (err, result) {
