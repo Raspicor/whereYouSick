@@ -1,4 +1,0 @@
-{
-    "ignore" : ["mysql/*"],
-    "exec" : "node app_mysql.js"
-}
